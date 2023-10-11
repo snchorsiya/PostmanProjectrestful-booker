@@ -77,7 +77,7 @@
 									"});\r",
 									"\r",
 									"pm.test(\"Generate Unsuccessful POST request\", function () {\r",
-									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 202]);\r",
 									"});\r",
 									"\r",
 									"postman.setNextRequest(\"GetbookingIds\");"
@@ -450,7 +450,7 @@
 									"});\r",
 									"\r",
 									"pm.test(\"Generate Unsuccessful POST request\", function () {\r",
-									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 202]);\r",
 									"});"
 								],
 								"type": "text/javascript"
