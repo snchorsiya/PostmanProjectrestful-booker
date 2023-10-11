@@ -1,0 +1,609 @@
+{
+	"info": {
+		"_postman_id": "d4e40eac-5d5b-4f72-9eb8-6019300c1cec",
+		"name": "restful-booker-API-Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13852941",
+		"_collection_link": "https://galactic-astronaut-894425.postman.co/workspace/MyProjectAPI~b6dafb4f-3507-4e58-a32d-dd31bf6ab148/collection/13852941-d4e40eac-5d5b-4f72-9eb8-6019300c1cec?action=share&source=collection_link&creator=13852941"
+	},
+	"item": [
+		{
+			"name": "CRUD",
+			"item": [
+				{
+					"name": "Create_Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check the Status Code 200\",function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"bookingid\",jsonData.bookingid);\r",
+									"pm.environment.set(\"fname\",jsonData.booking.firstname);\r",
+									"pm.environment.set(\"lname\",jsonData.booking.lastname);\r",
+									"pm.environment.set(\"checkinDate\",jsonData.booking.bookingdates.checkin);\r",
+									"pm.environment.set(\"checkoutDate\",jsonData.booking.bookingdates.checkout);\r",
+									"pm.environment.set(\"additionalneeds\", jsonData.booking.additionalneeds);\r",
+									"\r",
+									"\r",
+									"pm.test(\"response time is less then 3000ms\",function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.lessThan(3000);\r",
+									"});\r",
+									"\r",
+									"// Sending request from Scripts\r",
+									"pm.sendRequest(\"https://restful-booker.herokuapp.com/booking/\",function(err,response){\r",
+									"    if(err){\r",
+									"        console.log(err);\r",
+									"    }\r",
+									"    else{\r",
+									"        console.log(response.json());\r",
+									"    }\r",
+									"\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check the multiple status code\",function(){\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,202]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type is paresent\",function(){\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-type header is application/json\",function(){\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									"//Using multiple assertions\r",
+									"pm.test(\"The response has all properties\",function(){\r",
+									"    const responseJsonData = pm.response.json();\r",
+									"    pm.expect(responseJsonData.booking.additionalneeds).to.eql(\"Breakfast\");\r",
+									"    pm.expect(responseJsonData.bookingid).to.be.a(\"number\");\r",
+									"  \r",
+									"});\r",
+									"\r",
+									"var req = pm.response.json();\r",
+									"pm.test(\"Verify the values are not null\",function(){\r",
+									"    pm.expect(req.firstname, \"FirstName is not null\").to.not.be.null;\r",
+									"    pm.expect(req.lastname, \"LastName is not null\").to.not.be.null;\r",
+									"    pm.expect(req.totalprice, \"TotalPrice is not null\").to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 202]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Generate Unsuccessful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"GetbookingIds\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\" : \"{{$randomFirstName}}\",\r\n    \"lastname\" : \"{{$randomLastName}}\",\r\n    \"totalprice\" : \"{{$randomPrice}}\",\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"{{$randomDatePast}}\",\r\n        \"checkout\" : \"{{$randomDateFuture}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}"
+						},
+						"url": {
+							"raw": "{{qc_url}}/booking",
+							"host": [
+								"{{qc_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check the Status Code 200\",function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"auth_toekn\", jsonData.token);\r",
+									"\r",
+									"pm.test(\"response should be okey  to process\",function(){\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.jsonBody(\"token\");\r",
+									"    pm.response.to.not.have.jsonBody(\"error\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 2000\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.lessThan(2000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type is paresent\", function(){\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"UpdateBooking\");\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qc_url}}/auth",
+							"host": [
+								"{{qc_url}}"
+							],
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetBookingIdsAll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check the Status code 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check the Status name is Ok\", function(){\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type is present\",function(){\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body matches string is bookingid\",function(){\r",
+									"    pm.expect(pm.response.text()).to.include(\"bookingid\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-type header is application/json\",function(){\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response time is greater than 2000ms\",function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.greaterThan(2000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Cookie exists\",function(){\r",
+									"    pm.expect(pm.cookies.has(\"bookingid\")).to.be.true;\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Create_Booking\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{qc_url}}/booking/",
+							"host": [
+								"{{qc_url}}"
+							],
+							"path": [
+								"booking",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetBookingIds_filterBycheckin_checkout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"PartialUpdateBooking\");\r",
+									"\r",
+									"pm.test(\"Check the status code 200\",function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response time is less then 3000ms\",function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.lessThan(3000);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"    jsonData.forEach(Object => {\r",
+									"        pm.test(\"booking id for ${Object.bookingid} is a string\",function(){\r",
+									"            pm.expect(Object.bookingid).to.be.a(\"number\");\r",
+									"\r",
+									"        });\r",
+									"  \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/booking?checkin={{checkinDate}}&checkout={{checkoutDate}}",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"booking"
+							],
+							"query": [
+								{
+									"key": "checkin",
+									"value": "{{checkinDate}}"
+								},
+								{
+									"key": "checkout",
+									"value": "{{checkoutDate}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetBookingIds_filterByName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"GetBookingIds_filterBycheckin_checkout\");\r",
+									"\r",
+									"pm.test(\"Check the status code 200\",function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response time is less then 3000ms\",function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.lessThan(3000);\r",
+									"});\r",
+									"\r",
+									"var req = pm.response.json();\r",
+									"pm.test(\"Verify the values are not null\",function(){\r",
+									"    pm.expect(req.bookingid, \"Bookingid is not null\").to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{qc_url}}/booking?firstname={{fname}}&lastname={{lname}}",
+							"host": [
+								"{{qc_url}}"
+							],
+							"path": [
+								"booking"
+							],
+							"query": [
+								{
+									"key": "firstname",
+									"value": "{{fname}}"
+								},
+								{
+									"key": "lastname",
+									"value": "{{lname}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetbookingIds",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"CreateToken\");\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"pm.test(\"Check all json postive result\",function(){\r",
+									"    console.log(pm.environment.get(\"fname\"));\r",
+									"    console.log(pm.environment.get(\"lname\"));\r",
+									"    console.log(pm.environment.get(\"checkinDate\"));\r",
+									"    console.log(pm.environment.get(\"checkoutDate\"));\r",
+									"    console.log(pm.environment.get(\"additionalneeds\"));\r",
+									"    \r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Check the Status Code 200\",function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type is paresent\", function(){\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response time is less then 3000ms\",function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.lessThan(3000);\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{qc_url}}/booking/{{bookingid}}",
+							"host": [
+								"{{qc_url}}"
+							],
+							"path": [
+								"booking",
+								"{{bookingid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateBooking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"GetBookingIds_filterByName\");\r",
+									"\r",
+									"pm.test(\"Check the Status Code 200\",function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"pm.test(\"Check all json postive result\",function(){\r",
+									"    console.log(pm.environment.get(\"fname\"));\r",
+									"    console.log(pm.environment.get(\"lname\"));\r",
+									"    console.log(pm.environment.get(\"checkinDate\"));\r",
+									"    console.log(pm.environment.get(\"checkoutDate\"));\r",
+									"    console.log(pm.environment.get(\"additionalneeds\"));\r",
+									"    \r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									"pm.test(\"response time is less then 3000ms\",function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.lessThan(3000);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Content-Type is paresent\",function(){\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-type header is application/json\",function(){\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									"//Using multiple assertions\r",
+									"pm.test(\"The response has all properties\",function(){\r",
+									"    const responseJsonData = pm.response.json();\r",
+									"    pm.expect(responseJsonData.additionalneeds).to.eql(\"Breakfast\");\r",
+									"  \r",
+									"});\r",
+									"\r",
+									"var req = pm.response.json();\r",
+									"pm.test(\"Verify the values are not null\",function(){\r",
+									"    pm.expect(req.firstname, \"FirstName is not null\").to.not.be.null;\r",
+									"    pm.expect(req.lastname, \"LastName is not null\").to.not.be.null;\r",
+									"    pm.expect(req.totalprice, \"TotalPrice is not null\").to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 202]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Generate Unsuccessful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{auth_toekn}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\" : \"{{$randomFirstName}}\",\r\n    \"lastname\" : \"{{$randomLastName}}\",\r\n    \"totalprice\" : \"{{$randomPrice}}\",\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"{{$randomDatePast}}\",\r\n        \"checkout\" : \"{{$randomDateFuture}}\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qc_url}}/booking/{{bookingid}}",
+							"host": [
+								"{{qc_url}}"
+							],
+							"path": [
+								"booking",
+								"{{bookingid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PartialUpdateBooking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"DeleteBooking\");\r",
+									"\r",
+									"pm.test(\"Check the Status Code 200\",function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"pm.test(\"Check all json postive result\",function(){\r",
+									"    console.log(pm.environment.get(\"fname\"));\r",
+									"    console.log(pm.environment.get(\"lname\"));\r",
+									"    \r",
+									"});\r",
+									"\r",
+									"pm.test(\"response time is less then 3000ms\",function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.lessThan(3000);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{auth_toekn}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\" : \"{{$randomFirstName}}\",\r\n    \"lastname\" : \"{{$randomLastName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qc_url}}/booking/{{bookingid}}",
+							"host": [
+								"{{qc_url}}"
+							],
+							"path": [
+								"booking",
+								"{{bookingid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteBooking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(null);\r",
+									"\r",
+									"pm.test(\"Check the Status Code 201\",function(){\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check the Status Code name is Created\", function(){\r",
+									"    pm.response.to.have.status(\"Created\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Generate Unsuccessful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response time is less then 3000ms\",function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.lessThan(3000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token={{auth_toekn}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{qc_url}}/booking/{{bookingid}}",
+							"host": [
+								"{{qc_url}}"
+							],
+							"path": [
+								"booking",
+								"{{bookingid}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
